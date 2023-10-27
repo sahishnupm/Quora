@@ -1,6 +1,7 @@
 # Quora
 
-```pip install -r requirments.txt
+```
+pip install -r requirments.txt
 ```
 
 ```python manage.py migrate
