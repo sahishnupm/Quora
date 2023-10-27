@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            width: 300px;
+            margin: 150px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <form action="#" method="post" id="loginForm">
+        <h2>Login</h2>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button>Login</button>
+        <p>Don't have an account? <a href="#" onclick="showCreateUserForm()">Create User</a></p>
+    </form>
+
+
+    <div id="createUserFormDiv" style="display: none;">
+        <h2>Create User</h2>
+        <form action="#" method="post" id="createUserForm">
+            <label for="newUsername">New Username:</label>
+            <input type="text" id="newUsername" name="newUsername" required>
+
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+
+            <button>Create User</button>
+            <p>Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.getElementById('createUserForm').onsubmit = function(event) {
+        event.preventDefault() ;
+        const user  = document.getElementById('newUsername').value ;
+        const pass = document.getElementById('newPassword').value ;
+ 
+            console.log({ name: user, password: pass });
+
+        $.ajax({
+            url: "http://127.0.0.1:8000/create", 
+            type: "POST",
+            // dataType: "json",
+            // contentType: "application/json; charset=utf-8",
+            data: { user: user, password: pass },   
+            success: function (data, textStatus, jqXHR) {
+                console.log("SUccess = ", data);
+                if(data.status){
+                    location.href = "/dashboard" ;
+                }
+                },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(jqXHR, textStatus, errorThrow);
+            }
+        }); 
+
+    }
+
+    document.getElementById('loginForm').onsubmit = function(event){
+        event.preventDefault() ;
+        const user  = document.getElementById('username').value ;
+        const pass = document.getElementById('password').value ;
+
+        $.ajax({
+            url: "http://127.0.0.1:8000/login", 
+            type: "POST",
+            // dataType: "json",
+            // contentType: "application/json; charset=utf-8",
+            data: { user: user, password: pass },   
+            success: function (data, textStatus, jqXHR) {
+                console.log("SUccess = ", data);
+                if(data.status){
+                    location.href = "/dashboard" ;
+                }
+                },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(jqXHR, textStatus, errorThrow);
+            }
+        }); 
+    }
+
+    showCreateUserForm = () => {
+        $("#loginForm").hide() ;
+        $("#createUserFormDiv").show() ;
+    }
+    showLoginForm = () => {
+        $("#createUserFormDiv").hide() ;
+        $("#loginForm").show() ;
+    }
+
+
+</script>
+
+</body>
+</html>

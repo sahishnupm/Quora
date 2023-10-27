@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard | {{ username }}</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <style>
+            html{
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                margin: 0;
+            }
+            body{
+                margin: 0;
+            }
+            .page-header{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid grey;
+                margin-bottom: 30px;
+                background-color: rgb(46, 85, 98);
+                color: white;
+                padding: 0 20px;
+            }
+        .page-header button{
+            height: fit-content;
+            padding: 10px;
+            background-color: red;
+            border: none;
+            color: white;
+        }
+        .qustion-cont{
+            padding: 10px;
+            background-color: rgba(173, 216, 230, 0.414);
+            margin: 30px 10px;
+            border-radius: 8px;
+        }
+        .qustion-cont header{
+            display:grid;
+            margin-bottom: 20px;
+        }
+
+        .question-name{
+            font-size: 2em;
+        }
+
+        .my-reply{
+            margin-top: 10px;
+            display: flex;
+        }
+
+        .my-reply input{
+            padding: 7px;
+            margin-right: 10px;
+            width: calc(100% - 100px);
+        }
+
+        .my-reply button{
+            width: 90px;
+            background-color: rgb(27, 85, 118);
+            color: white;
+            border: none;
+        }
+
+        .replies-cont{
+            margin-left: 20px   ;
+        }
+        .response-child{
+            display: flex;
+            border-radius: 8px;
+            justify-content: space-between;
+            margin: 5px;
+            background-color: rgba(173, 216, 230, 0.358);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .my-question-cont{
+            margin: 40px 10px;
+            width: calc(100% - 40px);
+        }
+
+        .my-question-cont input{
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 50%;
+        }
+        .my-question-cont textarea{
+            width: 100%;
+            height: 100px;
+            padding: 5px;
+            resize: none;
+        }
+        .my-question-cont button{
+            padding: 10px;
+            width: 100px;
+            background-color: rgb(46, 85, 98);
+            color: white;
+            border: 1px solid rgb(46, 85, 98);
+            font-size: 1.3em;
+        }
+
+        .like-button{
+            padding: 8px;
+            width: 60px;
+            margin-left: 10px;
+            background: none;
+            color: rgb(46, 85, 98);
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        </style>
+    </head>
+    <main>
+        <header class="page-header">
+            <h1>Hello, {{ username }}</h1>
+            <button onclick="logout()">Logout</button>
+        </header>
+
+        <div class="my-question-cont">
+            <header> <b>Post your question</b> </header>
+            <input type="text" id="question" placeholder="Question"><br>
+            <textarea placeholder="Your description" id="description"></textarea>
+            <button onclick="postQuestion()">submit</button>
+        </div>
+
+        {% for question in questions %}
+        <!-- {{ question }}  -->
+            <div class="qustion-cont">
+                <header>
+                    <span>posted by : <b>{{ question.username }}</b></span>
+                    <span>posted at : {{ question.updated_by }}</span>
+                </header>
+
+                <span style="color: grey; font-size: 0.8em;">
+                    Question:
+                </span>
+                <section>
+                    <b class="question-name">{{ question.question_name }}</b> <br>
+                    <p>{{ question.description }}</p>
+                </section>
+                <section class="replies-cont">
+                    <span style="color: grey; font-size: 0.8em;">
+                        Answers:
+                    </span>
+                    {% for reply in question.replies %}
+                        <article class="response-child">
+                            <section>
+                                <article>{{ reply.responds }}</article>
+                                <article style="color: grey"><span>{{ reply.username }}</span> | <label style="font-size: 0.8em;">{{ reply.responds_time }}</label></article>
+                            </section>
+                                <section>
+                                    <label>Likes : {{ reply.likes }}</label>
+                                    {% if reply.like_status %}
+                                        <button class="like-button" onclick="unlikeQuestion({{ reply.question_detail_id }})">Unlike</button>
+                                    {% else %}
+                                        <button class="like-button" onclick="likeQuestion({{ reply.question_detail_id }})">Like</button>
+                                    {% endif %}
+                                </section>
+                        </article>
+                    {% endfor %}
+                </section>
+
+                <section class="my-reply" style="margin-top: 30px;">
+                    <input type="text" placeholder="My reply" id="reply"> <button onclick="postReply({{ question.question_id }})">send</button>
+                </section>
+            </div>
+        {% endfor %}
+
+
+
+    </main>
+
+    <script>
+
+        unlikeQuestion = (question_id) => {
+                $.ajax({
+                    url: "toggle-like", 
+                    type: "POST",
+                    // dataType: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    data: { question_id: question_id, context:'unlike' },   
+                    success: function (data, textStatus, jqXHR) {
+                        console.log("SUccess = ", data);
+                        if(data.status){
+                            location.reload() ;
+                        } else {
+                            if(data.msg == "login"){
+                                location.href = "/home" ;
+                            }
+                        }
+                        },
+                    error: function (jqXHR, textStatus, errorThrow) {
+                        console.log(jqXHR, textStatus, errorThrow);
+                    }
+                }); 
+        }
+
+        likeQuestion = (question_id) => {
+                $.ajax({
+                    url: "toggle-like", 
+                    type: "POST",
+                    // dataType: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    data: { question_id: question_id, context:'like' },   
+                    success: function (data, textStatus, jqXHR) {
+                        console.log("SUccess = ", data);
+                        if(data.status){
+                            location.reload() ;
+                        } else {
+                            if(data.msg == "login"){
+                                location.href = "/home" ;
+                            }
+                        }
+                        },
+                    error: function (jqXHR, textStatus, errorThrow) {
+                        console.log(jqXHR, textStatus, errorThrow);
+                    }
+                }); 
+        }
+
+        postReply = (question_id) => {
+            let reply = document.getElementById('reply').value.trim() ;
+            if(reply){
+                $.ajax({
+                    url: "add-reply", 
+                    type: "POST",
+                    // dataType: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    data: { reply: reply, question_id: question_id },   
+                    success: function (data, textStatus, jqXHR) {
+                        console.log("SUccess = ", data);
+                        if(data.status){
+                            location.reload() ;
+                        } else {
+                            if(data.msg == "login"){
+                                location.href = "/home" ;
+                            }
+                        }
+                        },
+                    error: function (jqXHR, textStatus, errorThrow) {
+                        console.log(jqXHR, textStatus, errorThrow);
+                    }
+                }); 
+            }
+        }
+
+        postQuestion = () => {
+            let question = document.getElementById('question').value.trim() ;
+            let description = document.getElementById('description').value.trim() ;
+
+            if(question){
+                console.log(question);
+
+                $.ajax({
+                    url: "post", 
+                    type: "POST",
+                    // dataType: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    data: { question: question, description: description },   
+                    success: function (data, textStatus, jqXHR) {
+                        console.log("SUccess = ", data);
+                        if(data.status){
+                            location.reload() ;
+                        } else {
+                            if(data.msg == "login"){
+                                location.href = "/home" ;
+                            }
+                        }
+                        },
+                    error: function (jqXHR, textStatus, errorThrow) {
+                        console.log(jqXHR, textStatus, errorThrow);
+                    }
+                }); 
+            }
+        }
+
+        logout = () => {
+                console.log(question);
+
+                $.ajax({
+                    url: "http://127.0.0.1:8000/logout", 
+                    type: "POST",
+                    success: function (data, textStatus, jqXHR) {
+                        console.log("SUccess = ", data);
+                        location.reload() ;
+        
+                        },
+                    error: function (jqXHR, textStatus, errorThrow) {
+                        console.log(jqXHR, textStatus, errorThrow);
+                    }
+                }); 
+        }
+
+    </script>
+</html>
