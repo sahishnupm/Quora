@@ -1,10 +1,13 @@
 # Quora
 
-```pip install -r requirments.txt
+```
+pip install -r requirments.txt
 ```
 
-```python manage.py migrate
+```
+python manage.py migrate
 ```
 
-```python manage.py runserver 127.0.0.1:8000
+```
+python manage.py runserver 127.0.0.1:8000
 ```
