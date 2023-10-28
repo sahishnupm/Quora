@@ -6,20 +6,6 @@ from users.models import Users
 
 def home(request):
     return render(request, 'users/login.html')
-    # template = loader.get_template('login.html')
-    # return HttpResponse(template.render())
-
-# def create_user(request):
-#     username = request.get['username']
-#     password = request.get['password']
-#     print(username, password)
-#     user_model = Users(username=username, password=password)
-#     user_model.save()
-#     return {'message':'SUCCESS'}
-
-
-# def createUser(request):    
-#     return JsonResponse({"status" : True})
 
 
 class CreateUser(View):
@@ -67,12 +53,3 @@ class Logout(View):
 
 
 
-
-
-# def login(request):
-#     username = request.get['username']
-#     password = request.get['password']
-#     user = users_dao.post(username=username,password=password)
-#     if not user:
-#         return HttpResponse("Login failed")
-#     print("Login successful")

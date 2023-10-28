@@ -7,18 +7,3 @@ class Users(models.Model):
 
 
 
-# from mongoengine import Document, StringField
-
-# class Users(Document):
-#     username = StringField(required=True, max_length=15)
-#     password = StringField(required=True)
-
-# class UsersDao():
-
-#     def get(self,name):
-#         return Users.objects(name=name).first()
-    
-#     def post(self,username,password):
-#         return Users.objects(username=username,password=password).first()
-    
-# users_dao = UsersDao()
